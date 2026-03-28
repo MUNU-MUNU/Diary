@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>🌸 美桜の英語日記</title>
+<link href="https://fonts.googleapis.com/css2?family=Shippori+Mincho:wght@400;500;600&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --sakura: #e8a0b0;
+    --sakura-light: #fdf0f3;
+    --sakura-mid: #f5c8d4;
+    --ink: #1a1218;
+    --ink-soft: #5c4a52;
+    --ink-faint: #9e8a92;
+    --surface: #fffafc;
+    --surface2: #fef5f7;
+    --border: rgba(232,160,176,0.25);
+    --border-strong: rgba(232,160,176,0.5);
+    --success: #2d7a4f;
+    --success-bg: #edf7f2;
+    --error: #c0392b;
+    --error-bg: #fdecea;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'DM Sans', sans-serif; background: var(--surface); color: var(--ink); min-height: 100vh; }
+  .bg-petals { position: fixed; top: 0; left: 0; right: 0; bottom: 0; pointer-events: none; overflow: hidden; z-index: 0; }
+  .petal { position: absolute; width: 8px; height: 10px; background: var(--sakura-mid); border-radius: 50% 50% 50% 0; opacity: 0; animation: fall linear infinite; }
+  @keyframes fall { 0% { transform: translateY(-20px) rotate(0deg); opacity: 0.6; } 100% { transform: translateY(100vh) rotate(360deg); opacity: 0; } }
+  .wrapper { position: relative; z-index: 1; max-width: 480px; margin: 0 auto; padding: 2rem 1.25rem 4rem; }
+  header { text-align: center; margin-bottom: 2rem; padding-top: 1rem; }
+  .logo { font-family: 'Shippori Mincho', serif; font-size: 26px; font-weight: 600; color: var(--ink); margin-bottom: 4px; }
+  .logo span { color: var(--sakura); }
+  .subtitle { font-size: 12px; color: var(--ink-faint); letter-spacing: 0.05em; }
+  .divider { width: 40px; height: 1px; background: var(--sakura-mid); margin: 12px auto 0; }
+  .card { background: white; border: 0.5px solid var(--border-strong); border-radius: 20px; padding: 1.25rem; margin-bottom: 1rem; box-shadow: 0 2px 20px rgba(232,160,176,0.08); }
+  .card-label { font-size: 11px; font-weight: 500; letter-spacing: 0.1em; color: var(--sakura); text-transform: uppercase; margin-bottom: 10px; }
+  input[type="date"], input[type="password"], input[type="text"] {
+    width: 100%; border: 0.5px solid var(--border-strong); border-radius: 10px;
+    padding: 10px 14px; font-size: 14px; font-family: 'DM Sans', sans-serif;
+    color: var(--ink); background: var(--surface2); outline: none; transition: border-color 0.2s;
+  }
+  input:focus { border-color: var(--sakura); }
+  .upload-area { border: 1.5px dashed var(--border-strong); border-radius: 14px; padding: 2rem 1rem; text-align: center; cursor: pointer; background: var(--surface2); transition: all 0.2s; position: relative; }
+  .upload-area:hover { border-color: var(--sakura); background: var(--sakura-light); }
+  .upload-area input[type="file"] { position: absolute; inset: 0; opacity: 0; cursor: pointer; width: 100%; height: 100%; }
+  .upload-icon { font-size: 30px; margin-bottom: 8px; }
+  .upload-text { font-size: 14px; color: var(--ink-soft); margin-bottom: 4px; }
+  .upload-hint { font-size: 12px; color: var(--ink-faint); }
+  .preview-img { width: 100%; max-height: 220px; object-fit: contain; border-radius: 10px; margin-top: 12px; display: none; }
+  textarea { width: 100%; border: 0.5px solid var(--border-strong); border-radius: 10px; padding: 12px 14px; font-size: 14px; font-family: 'DM Sans', sans-serif; color: var(--ink); background: var(--surface2); resize: vertical; line-height: 1.7; outline: none; transition: border-color 0.2s; }
+  textarea:focus { border-color: var(--sakura); }
+  .btn { display: flex; align-items: center; justify-content: center; gap: 8px; width: 100%; padding: 13px; border-radius: 14px; font-size: 15px; font-weight: 500; font-family: 'DM Sans', sans-serif; cursor: pointer; border: none; transition: all 0.2s; margin-bottom: 8px; }
+  .btn:active { transform: scale(0.98); }
+  .btn:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
+  .btn-dark { background: var(--ink); color: white; }
+  .btn-dark:hover:not(:disabled) { background: #2d1f26; }
+  .btn-sakura { background: var(--sakura); color: white; }
+  .btn-sakura:hover:not(:disabled) { background: #d4788e; }
+  .btn-outline { background: transparent; color: var(--sakura); border: 0.5px solid var(--border-strong); }
+  .btn-outline:hover { background: var(--sakura-light); }
+  .status { padding: 11px 14px; border-radius: 12px; font-size: 13px; margin-top: 10px; display: none; line-height: 1.5; }
+  .status.success { background: var(--success-bg); color: var(--success); border: 0.5px solid rgba(45,122,79,0.2); }
+  .status.error { background: var(--error-bg); color: var(--error); border: 0.5px solid rgba(192,57,43,0.2); }
+  .status.loading { background: var(--sakura-light); color: var(--ink-soft); border: 0.5px solid var(--border-strong); }
+  @keyframes dots { 0%{content:''} 33%{content:'.'} 66%{content:'..'} 100%{content:'...'} }
+  .loading-dots::after { content:''; animation: dots 1.5s infinite; }
+  .step-badge { display: inline-flex; align-items: center; justify-content: center; width: 20px; height: 20px; border-radius: 50%; background: var(--sakura-light); color: var(--sakura); font-size: 11px; font-weight: 500; margin-right: 6px; }
+  .tag { display: inline-block; padding: 3px 10px; border-radius: 20px; font-size: 11px; background: var(--sakura-light); color: var(--sakura); margin-bottom: 8px; }
+  .hidden { display: none; }
+  .settings-hint { font-size: 12px; color: var(--ink-faint); margin-top: 6px; }
+  .saved-badge { display: inline-block; font-size: 11px; color: var(--success); margin-left: 8px; }
+</style>
+</head>
+<body>
+
+<div class="bg-petals" id="petals"></div>
+
+<div class="wrapper">
+  <header>
+    <div class="logo">美桜の<span>英語日記</span></div>
+    <div class="subtitle">English Diary · AI Correction</div>
+    <div class="divider"></div>
+  </header>
+
+  <!-- 初回設定 -->
+  <div class="card" id="setup-card">
+    <div class="card-label">⚙️ 初回設定（1回だけ）</div>
+    <p style="font-size:13px;color:var(--ink-soft);margin-bottom:14px;line-height:1.6;">
+      NotionのAPIトークンとデータベースIDを入力してください。このデバイスにのみ保存され、外部には送信されません。
+    </p>
+    <div style="margin-bottom:10px;">
+      <div style="font-size:12px;color:var(--ink-faint);margin-bottom:4px;">Notion APIトークン</div>
+      <input type="password" id="setup-token" placeholder="ntn_xxxxxxxxxx...">
+    </div>
+    <div style="margin-bottom:14px;">
+      <div style="font-size:12px;color:var(--ink-faint);margin-bottom:4px;">データベースID</div>
+      <input type="text" id="setup-dbid" placeholder="32文字の英数字">
+    </div>
+    <button class="btn btn-dark" onclick="saveSettings()">設定を保存する</button>
+    <div class="status" id="setup-status"></div>
+  </div>
+
+  <!-- メイン画面 -->
+  <div id="main-area" class="hidden">
+
+    <div class="card">
+      <div class="card-label"><span class="step-badge">1</span>日付を選ぶ</div>
+      <input type="date" id="diary-date">
+    </div>
+
+    <div class="card">
+      <div class="card-label"><span class="step-badge">2</span>日記の写真をアップロード</div>
+      <div class="upload-area" id="upload-area">
+        <input type="file" id="photo-input" accept="image/*" capture="environment">
+        <div class="upload-icon">📷</div>
+        <div class="upload-text">写真を選ぶ or カメラで撮影</div>
+        <div class="upload-hint">JPG・PNG対応</div>
+      </div>
+      <img id="preview-img" class="preview-img" alt="プレビュー">
+    </div>
+
+    <div class="card">
+      <div class="card-label"><span class="step-badge">3</span>AIで添削する</div>
+      <button class="btn btn-dark" id="analyze-btn" onclick="analyzeDiary()" disabled>
+        ✨ 写真を読み込んで添削する
+      </button>
+      <div class="status" id="analyze-status"></div>
+    </div>
+
+    <div class="card hidden" id="result-section">
+      <div class="card-label"><span class="step-badge">4</span>添削結果を確認・編集</div>
+      <div class="tag">添削後の英文</div>
+      <textarea id="english-result" rows="6"></textarea>
+      <br><br>
+      <div class="tag">日本語訳</div>
+      <textarea id="japanese-result" rows="4"></textarea>
+    </div>
+
+    <div class="card hidden" id="save-section">
+      <div class="card-label"><span class="step-badge">5</span>NotionとGoogleカレンダーに保存</div>
+      <button class="btn btn-sakura" id="save-btn" onclick="saveDiary()">
+        🌸 保存する
+      </button>
+      <div class="status" id="save-status"></div>
+    </div>
+
+    <button class="btn btn-outline" onclick="showSettings()" style="margin-top:1rem;">
+      ⚙️ 設定を変更する
+    </button>
+
+  </div>
+
+  <p style="font-size:11px;color:var(--ink-faint);text-align:center;margin-top:1.5rem;line-height:1.6;">
+    写真・日記データはサーバーに保存されません
+  </p>
+</div>
+
+<script>
+const CLAUDE_API = 'https://api.anthropic.com/v1/messages';
+
+// 花びら
+const pc = document.getElementById('petals');
+for(let i=0;i<12;i++){
+  const p=document.createElement('div'); p.className='petal';
+  p.style.left=Math.random()*100+'%';
+  p.style.animationDuration=(8+Math.random()*12)+'s';
+  p.style.animationDelay=(Math.random()*10)+'s';
+  pc.appendChild(p);
+}
+
+// 今日の日付
+document.getElementById('diary-date').value = new Date().toISOString().split('T')[0];
+
+// 設定の読み込み
+function loadSettings() {
+  const token = localStorage.getItem('notion_token');
+  const dbid = localStorage.getItem('notion_dbid');
+  if (token && dbid) {
+    document.getElementById('setup-card').classList.add('hidden');
+    document.getElementById('main-area').classList.remove('hidden');
+    return true;
+  }
+  return false;
+}
+
+function saveSettings() {
+  const token = document.getElementById('setup-token').value.trim();
+  const dbid = document.getElementById('setup-dbid').value.trim();
+  if (!token || !dbid) {
+    showStatus('setup-status','error','両方入力してください');
+    return;
+  }
+  localStorage.setItem('notion_token', token);
+  localStorage.setItem('notion_dbid', dbid);
+  showStatus('setup-status','success','✓ 保存しました！');
+  setTimeout(() => {
+    document.getElementById('setup-card').classList.add('hidden');
+    document.getElementById('main-area').classList.remove('hidden');
+  }, 800);
+}
+
+function showSettings() {
+  const token = localStorage.getItem('notion_token') || '';
+  document.getElementById('setup-token').value = token;
+  document.getElementById('setup-dbid').value = localStorage.getItem('notion_dbid') || '';
+  document.getElementById('setup-card').classList.remove('hidden');
+  document.getElementById('main-area').classList.add('hidden');
+}
+
+loadSettings();
+
+// 写真選択
+let imageBase64 = null;
+document.getElementById('photo-input').addEventListener('change', function(e) {
+  const file = e.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = function(ev) {
+    const result = ev.target.result;
+    imageBase64 = result.split(',')[1];
+    const preview = document.getElementById('preview-img');
+    preview.src = result;
+    preview.style.display = 'block';
+    document.getElementById('analyze-btn').disabled = false;
+  };
+  reader.readAsDataURL(file);
+});
+
+function showStatus(id, type, msg) {
+  const el = document.getElementById(id);
+  el.className = 'status ' + type;
+  el.style.display = 'block';
+  el.innerHTML = msg;
+}
+
+async function analyzeDiary() {
+  if (!imageBase64) return;
+  const btn = document.getElementById('analyze-btn');
+  btn.disabled = true;
+  showStatus('analyze-status','loading','<span class="loading-dots">AIが添削中</span>');
+  try {
+    const res = await fetch(CLAUDE_API, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-20250514',
+        max_tokens: 1000,
+        system: `あなたは英語日記の添削専門家です。写真から英語の日記を読み取り、以下のJSON形式のみで返してください。他のテキストは不要です。
+{"corrected":"添削後の英文","japanese":"日本語訳"}`,
+        messages: [{
+          role: 'user',
+          content: [
+            { type: 'image', source: { type: 'base64', media_type: 'image/jpeg', data: imageBase64 } },
+            { type: 'text', text: 'この日記の英文を添削してJSONで返してください。' }
+          ]
+        }]
+      })
+    });
+    const data = await res.json();
+    const text = data.content.map(i=>i.text||'').join('');
+    const parsed = JSON.parse(text.replace(/```json|```/g,'').trim());
+    document.getElementById('english-result').value = parsed.corrected || '';
+    document.getElementById('japanese-result').value = parsed.japanese || '';
+    document.getElementById('result-section').classList.remove('hidden');
+    document.getElementById('save-section').classList.remove('hidden');
+    showStatus('analyze-status','success','✓ 添削完了！確認して保存してください');
+  } catch(e) {
+    showStatus('analyze-status','error','❌ エラーが発生しました。もう一度試してください。');
+    btn.disabled = false;
+  }
+}
+
+async function saveDiary() {
+  const date = document.getElementById('diary-date').value;
+  const english = document.getElementById('english-result').value.trim();
+  const japanese = document.getElementById('japanese-result').value.trim();
+  const token = localStorage.getItem('notion_token');
+  const dbid = localStorage.getItem('notion_dbid');
+
+  if (!english) { showStatus('save-status','error','英文が空です'); return; }
+
+  const btn = document.getElementById('save-btn');
+  btn.disabled = true;
+  showStatus('save-status','loading','<span class="loading-dots">Notionに保存中</span>');
+
+  let notionOk = false;
+  let gcalOk = false;
+  let errors = [];
+
+  try {
+    const res = await fetch('https://api.notion.com/v1/pages', {
+      method: 'POST',
+      headers: {
+        'Authorization': 'Bearer ' + token,
+        'Content-Type': 'application/json',
+        'Notion-Version': '2022-06-28'
+      },
+      body: JSON.stringify({
+        parent: { database_id: dbid },
+        properties: { '名前': { title: [{ text: { content: date } }] } },
+        children: [
+          { object:'block', type:'heading_2', heading_2:{ rich_text:[{ text:{ content:'📝 添削後の英文' } }] } },
+          { object:'block', type:'paragraph', paragraph:{ rich_text:[{ text:{ content: english } }] } },
+          { object:'block', type:'heading_2', heading_2:{ rich_text:[{ text:{ content:'🇯🇵 日本語訳' } }] } },
+          { object:'block', type:'paragraph', paragraph:{ rich_text:[{ text:{ content: japanese||'（未入力）' } }] } }
+        ]
+      })
+    });
+    notionOk = res.ok;
+    if (!res.ok) { const err=await res.json(); errors.push('Notion: '+(err.message||'失敗')); }
+  } catch(e) { errors.push('Notion: 接続エラー'); }
+
+  showStatus('save-status','loading','<span class="loading-dots">Googleカレンダーに登録中</span>');
+  try {
+    const calRes = await fetch(CLAUDE_API, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-20250514',
+        max_tokens: 500,
+        system: 'You are a Google Calendar assistant. Create an all-day calendar event using the gcal MCP tool.',
+        messages: [{ role:'user', content:`Googleカレンダーに終日イベントを作成してください。タイトル:「英語日記 ${date}」日付:${date} 説明:${english.substring(0,200)}` }],
+        mcp_servers: [{ type:'url', url:'https://gcal.mcp.claude.com/mcp', name:'gcal' }]
+      })
+    });
+    gcalOk = calRes.ok;
+    if (!calRes.ok) errors.push('カレンダー: 失敗');
+  } catch(e) { errors.push('カレンダー: 接続エラー'); }
+
+  btn.disabled = false;
+
+  if (notionOk && gcalOk) {
+    showStatus('save-status','success','🌸 NotionとGoogleカレンダーに保存しました！');
+    setTimeout(resetForm, 3000);
+  } else if (notionOk) {
+    showStatus('save-status','success','✓ Notionに保存しました！');
+  } else {
+    showStatus('save-status','error','❌ ' + errors.join(' / '));
+  }
+}
+
+function resetForm() {
+  document.getElementById('result-section').classList.add('hidden');
+  document.getElementById('save-section').classList.add('hidden');
+  document.getElementById('preview-img').style.display = 'none';
+  document.getElementById('photo-input').value = '';
+  document.getElementById('analyze-btn').disabled = true;
+  document.getElementById('analyze-status').style.display = 'none';
+  document.getElementById('diary-date').value = new Date().toISOString().split('T')[0];
+  imageBase64 = null;
+}
+</script>
+</body>
+</html>
